@@ -1,0 +1,60 @@
+# CI Pipeline — weather-api-mini
+# Se ejecuta en cada push y pull request a main
+
+name: CI
+
+# Disparadores del workflow
+# push: cada vez que alguien sube código a main
+# pull_request: cada vez que se abre o actualiza un PR contra main
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    name: Lint y Tests
+    # VM Ubuntu limpia y nueva en cada ejecución
+    # Garantiza que no hay estado residual entre runs
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descargar el código del repositorio en la VM
+      # Sin este step la VM está vacía — no tiene el código fuente
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # 2. Instalar UV — el gestor de paquetes y entornos del proyecto
+      # La action oficial de Astral configura UV y lo añade al PATH
+      - name: Instalar UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      # 3. Instalar Python 3.12
+      # UV gestiona la versión de Python — no se usa actions/setup-python
+      - name: Instalar Python
+        run: uv python install 3.12
+
+      # 4. Instalar todas las dependencias del proyecto
+      # --all-extras incluye las dependencias de desarrollo (pytest, ruff)
+      # uv lee pyproject.toml y uv.lock para instalar versiones exactas
+      - name: Instalar dependencias
+        run: uv sync --all-extras
+
+      # 5. Lint con Ruff
+      # Si hay errores de estilo o código muerto → el job falla
+      # El push queda marcado con ❌ en GitHub — nadie puede ignorarlo
+      - name: Lint con ruff
+        run: uv run ruff check src/
+
+      # 6. Tests con pytest
+      # Los tests usan mocks — no necesitan Redis ni OpenWeather reales
+      # Las variables de entorno evitan errores de configuración faltante
+      - name: Tests con pytest
+        run: uv run pytest tests/ -v --tb=short
+        env:
+          OPENWEATHER_API_KEY: "test-key"
+          REDIS_HOST: "localhost"
+          REDIS_PORT: "6379"
