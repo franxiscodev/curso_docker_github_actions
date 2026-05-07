@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Process *)",
+      "PowerShell(curl *)",
+      "PowerShell(python -c \"import yaml; yaml.safe_load\\(open\\('C:/MIOS/Arteux/FEMXA/proyectos/weather-api-mini/.github/workflows/ci.yml'\\)\\); print\\('YAML valido'\\)\" 2>&1)"
+    ]
+  }
+}
