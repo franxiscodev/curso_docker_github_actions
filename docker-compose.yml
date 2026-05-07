@@ -1,0 +1,59 @@
+# Docker Compose — weather-api-mini
+# Orquesta dos servicios: FastAPI + Redis
+# Un solo archivo reemplaza múltiples comandos docker run manuales
+
+services:
+
+  # ── API FastAPI ───────────────────────────────────────────────
+  api:
+    # Construir la imagen desde el Dockerfile en el directorio actual
+    # Cada vez que cambia el código, docker compose up --build la reconstruye
+    build: .
+
+    # Mapear puerto del host → puerto del contenedor
+    # "8000:8000" = puerto 8000 del host → puerto 8000 del contenedor
+    # Sin esto, la API no sería accesible desde fuera de Docker
+    ports:
+      - "8000:8000"
+
+    environment:
+      # La API key se lee del .env del host — nunca se hardcodea aquí
+      # ${OPENWEATHER_API_KEY} la sustituye Docker Compose con el valor local
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+
+      # Networking interno clave:
+      # "redis" es el nombre del servicio definido abajo en este mismo archivo
+      # Docker Compose crea una red privada donde cada servicio es accesible
+      # por su nombre como si fuera un hostname DNS
+      # → api llama a redis:6379 y Docker lo resuelve a la IP del contenedor Redis
+      # Sin Docker Compose habría que gestionar IPs o redes manualmente
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+    # Esperar a que el servicio redis esté iniciado antes de arrancar la api
+    # No garantiza que Redis esté listo, solo que el contenedor arrancó
+    depends_on:
+      - redis
+
+    # Reiniciar el contenedor automáticamente si falla
+    # "unless-stopped" = reiniciar siempre excepto si se detuvo manualmente
+    restart: unless-stopped
+
+  # ── Redis — cache en memoria ──────────────────────────────────
+  redis:
+    # Imagen oficial de Redis, versión Alpine (mínima — sin herramientas extras)
+    # redis:7-alpine pesa ~30 MB vs ~110 MB de redis:7
+    image: redis:7-alpine
+
+    # Exponer el puerto estándar de Redis al host
+    # Permite conectarse con redis-cli desde fuera del contenedor para depurar
+    # En producción normalmente se elimina esta sección
+    ports:
+      - "6379:6379"
+
+    # Mismo comportamiento de reinicio que la api
+    restart: unless-stopped
+
+    # Redis no necesita volumen en este proyecto —
+    # el cache es intencionadamente temporal
+    # Si el contenedor se reinicia, el cache se vacía — correcto por diseño
