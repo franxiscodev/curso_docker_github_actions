@@ -1,6 +1,8 @@
 """Cliente de OpenWeather API."""
-import httpx
+
 import os
+
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -8,7 +10,7 @@ load_dotenv()
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 
-def get_weather(city: str) -> dict:
+def get_clima(city: str) -> dict:
     """Consulta el clima actual de una ciudad.
 
     Args:
