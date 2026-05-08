@@ -38,6 +38,6 @@ def test_get_weather_raises_on_http_error(mock_httpx_get):
 def test_api_key_configurada_en_ci():
     api_key = os.getenv("OPENWEATHER_API_KEY")
     assert api_key, (
-        "OPENWEATHER_API_KEY no configurada — "
+        "OPENWEATHER_API_KEY no configurada — pruebo de nuevo"
         "añádela en GitHub: Settings → Secrets and variables → Actions"
     )

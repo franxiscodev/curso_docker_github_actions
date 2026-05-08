@@ -55,6 +55,6 @@ jobs:
       - name: Tests con pytest
         run: uv run pytest tests/ -v --tb=short
         env:
-          OPENWEATHER_API_KEY: "test-key"
+          # OPENWEATHER_API_KEY: "test-key"
           REDIS_HOST: "localhost"
           REDIS_PORT: "6379"
