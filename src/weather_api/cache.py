@@ -1,9 +1,24 @@
 """Cache Redis para respuestas de OpenWeather."""
+
 import json
 import os
+
 import redis
 
 CACHE_TTL = 300  # 5 minutos
+# Time To Live
+
+"""
+Cache HIT -> true
+        devuelvo dato de la key Redis, no hace consulta externa
+        milisegundos
+Cache MISS -> false
+        Redis no tiene la key y si hace consulta externa
+        segundos de la respuesta externa
+"""
+
+
+# {"city": "Madrid", "temp": 12.5}
 
 
 def get_redis_client() -> redis.Redis:

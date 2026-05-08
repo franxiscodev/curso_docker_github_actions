@@ -1,8 +1,10 @@
 """API de clima con cache Redis."""
-from fastapi import FastAPI, HTTPException
-from weather_api.client import get_weather
-from weather_api.cache import get_cached_weather, set_cached_weather
+
 import httpx
+from fastapi import FastAPI, HTTPException
+
+from weather_api.cache import get_cached_weather, set_cached_weather
+from weather_api.client import get_weather
 
 app = FastAPI(title="Weather API Mini")
 
