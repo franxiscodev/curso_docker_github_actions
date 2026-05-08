@@ -17,7 +17,7 @@ El código Python ya está listo. El foco de la clase es 100% en Docker y CI.
 - **Docker Compose** — orquesta ambos servicios con un solo comando
 - **GitHub Actions** — pipeline de CI que verifica lint y tests en cada push
 
-## Requisitos
+## Requisitos Previos
 
 - Docker Desktop instalado y corriendo
 - Una API key de [OpenWeather](https://openweathermap.org/api) (cuenta gratuita)
