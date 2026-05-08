@@ -1,6 +1,9 @@
-import pytest
-import httpx
+import os
 from unittest.mock import MagicMock
+
+import httpx
+import pytest
+
 from weather_api.client import get_weather
 
 
@@ -19,8 +22,22 @@ def test_get_weather_raises_without_key(monkeypatch):
 
 
 def test_get_weather_raises_on_http_error(mock_httpx_get):
-    mock_httpx_get.return_value.raise_for_status.side_effect = (
-        httpx.HTTPStatusError("401", request=MagicMock(), response=MagicMock())
+    mock_httpx_get.return_value.raise_for_status.side_effect = httpx.HTTPStatusError(
+        "401", request=MagicMock(), response=MagicMock()
     )
     with pytest.raises(httpx.HTTPStatusError):
         get_weather("Valencia")
+
+
+# Solo corre en CI (GitHub Actions pone CI=true automáticamente)
+# Localmente se salta — no requiere tener la key real para desarrollar
+@pytest.mark.skipif(
+    os.getenv("CI") != "true",
+    reason="Solo corre en CI — verifica que el secret está configurado",
+)
+def test_api_key_configurada_en_ci():
+    api_key = os.getenv("OPENWEATHER_API_KEY")
+    assert api_key, (
+        "OPENWEATHER_API_KEY no configurada — "
+        "añádela en GitHub: Settings → Secrets and variables → Actions"
+    )
