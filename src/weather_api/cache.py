@@ -21,7 +21,7 @@ Cache MISS -> false
 # {"city": "Madrid", "temp": 12.5}
 
 
-def get_redis_client() -> redis.Redis:
+def get_redix_client() -> redis.Redis:
     """Crea cliente Redis desde variables de entorno."""
     return redis.Redis(
         host=os.getenv("REDIS_HOST", "localhost"),
